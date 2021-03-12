@@ -34,6 +34,23 @@ static NSArray* removeAdsItemsInList(NSArray *list) {
   return [orig copy];
 }
 
+%group SecurityGroup
+  %hook IGInstagramAppDelegate
+    static BOOL isAuthenticationShowed = FALSE;
+    - (void)applicationDidBecomeActive:(id)arg1 {
+      %orig;
+
+      if (!isAuthenticationShowed) {
+        UIViewController *rootController = [[self window] rootViewController];
+        SecurityViewController *securityViewController = [SecurityViewController new];
+        securityViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+        [rootController presentViewController:securityViewController animated:YES completion:nil];
+        isAuthenticationShowed = TRUE;
+      }
+    }
+  %end
+%end
+
 %group Common
   %hook IGFeedItem
     - (id)buildLikeCellStyledStringWithIcon:(id)arg1 andText:(id)arg2 style:(id)arg3 {
@@ -377,6 +394,8 @@ static id observer;
 %ctor {
   CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback) reloadPrefs, CFSTR(PREF_CHANGED_NOTIF), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
   reloadPrefs();
+
+  %init(SecurityGroup);
 
   // http://iphonedevwiki.net/index.php/User:Uroboro#Using_blocks
   observer = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidFinishLaunchingNotification

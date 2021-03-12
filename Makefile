@@ -5,7 +5,7 @@ INSTALL_TARGET_PROCESSES = Instagram Preferences
 include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = instanoads
-instanoads_FILES = $(wildcard *.xm *.m)
+instanoads_FILES = $(wildcard *.xm *.m *.swift **/*.swift)
 instanoads_EXTRA_FRAMEWORKS = libhdev
 instanoads_CFLAGS = -fobjc-arc -std=c++11
 
